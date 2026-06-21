@@ -225,7 +225,7 @@ with tab3:
     fig.update_layout(height=500)
     st.plotly_chart(fig, use_container_width=True, key="fig_platform")
 
-# ---------------------- 标签4 类型分布 ----------------------
+# ---------------------- 标签4 类型分布（已修复KeyError） ----------------------
 with tab4:
     st.subheader("各游戏类型全球销量对比")
     genre_sales = get_genre_sales_data(filtered_df)
@@ -233,13 +233,22 @@ with tab4:
     genre_sales = genre_sales.dropna(subset=["Genre"])
     genre_sales = genre_sales[genre_sales["Genre"].str.strip() != ""]
     genre_sales = genre_sales.reset_index(drop=True)
-    fig = px.bar(
-        genre_sales, y='Genre', x='Global_Sales',
-        color='Genre', color_discrete_sequence=plt_colors,
-        labels={'Global_Sales': '全球总销量（百万套）'},
-        text_auto='.1f', orientation='h'
+
+    # 替换为go底层绘图，彻底规避px分组KeyError
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=genre_sales["Genre"],
+        x=genre_sales["Global_Sales"],
+        orientation="h",
+        text=genre_sales["Global_Sales"].round(1),
+        textposition="auto",
+        marker_color=plt_colors[0]
+    ))
+    fig.update_layout(
+        xaxis_title="全球总销量（百万套）",
+        yaxis_title="游戏类型",
+        height=550
     )
-    fig.update_layout(height=550, showlegend=False)
     st.plotly_chart(fig, use_container_width=True, key="fig_genre")
 
 # ---------------------- 标签5 区域市场 ----------------------
