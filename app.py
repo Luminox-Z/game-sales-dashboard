@@ -229,7 +229,10 @@ with tab3:
 with tab4:
     st.subheader("各游戏类型全球销量对比")
     genre_sales = get_genre_sales_data(filtered_df)
-
+    # 清洗Genre空值、空白字符
+    genre_sales = genre_sales.dropna(subset=["Genre"])
+    genre_sales = genre_sales[genre_sales["Genre"].str.strip() != ""]
+    genre_sales = genre_sales.reset_index(drop=True)
     fig = px.bar(
         genre_sales, y='Genre', x='Global_Sales',
         color='Genre', color_discrete_sequence=plt_colors,
