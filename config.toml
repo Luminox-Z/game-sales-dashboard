@@ -1,0 +1,5 @@
+[server]
+headless = true
+
+[packages]
+pip_flags = "--only-binary=numpy,pandas,pillow,scipy"
